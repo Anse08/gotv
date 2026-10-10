@@ -35,6 +35,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  bool _isExtended = true; // متغير التحكم في الزر المتمدد
 
   final List<String> categories = ['الصفحة الرئيسية', 'دراما كورية', 'أفلام', 'مسلسلات', 'رعب'];
   int _selectedCategory = 0;
@@ -114,13 +115,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
 
-              // البانر الرئيسي البارز (Hero Banner)
+              // البانر الرئيسي البارز (يملأ الشاشة عرضاً)
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(
+                width: double.infinity,
+                height: 320,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
                     colors: [Color(0xFF1F6FEB), Color(0xFF0D1117)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -129,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Stack(
                   children: [
                     Positioned(
-                      bottom: 16,
+                      bottom: 24,
                       left: 16,
                       right: 16,
                       child: Column(
@@ -138,15 +138,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             'Doctor X',
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 26,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          SizedBox(height: 6),
                           Text(
                             'أحدث الدراما والتشويق الغامض',
-                            style: TextStyle(color: Colors.white70, fontSize: 13),
+                            style: TextStyle(color: Colors.white70, fontSize: 14),
                           ),
                         ],
                       ),
@@ -249,6 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
+              const SizedBox(height: 30),
             ],
           ),
         ),
