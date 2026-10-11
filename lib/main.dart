@@ -78,8 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-
-              // تصميم شريط التصنيفات الأفقية //
+// تصميم شريط التصنيفات الأفقية //
               SizedBox(
                 height: 40,
                 child: ListView.builder(
