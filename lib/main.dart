@@ -34,170 +34,220 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-  bool _isExtended = true;
-
   final List<String> categories = ['الصفحة الرئيسية', 'دراما كورية', 'أفلام', 'مسلسلات', 'رعب'];
   int _selectedCategory = 0;
+
+  // قائمة المصادر التي ستظهر في القائمة المنسدلة
+  final List<Map<String, String>> sources = [
+    {'name': 'None', 'flag': '🌐'},
+    {'name': 'Random', 'flag': '🔀'},
+    {'name': 'Aflaam', 'flag': '🇪🇬'},
+    {'name': 'Akwam', 'flag': '🇪🇬'},
+    {'name': 'AlooYTv', 'flag': '🇪🇬'},
+    {'name': 'Arabseed', 'flag': '🇪🇬'},
+    {'name': 'Asia2Tv.Com', 'flag': '🇪🇬'},
+    {'name': 'bristege', 'flag': '🇪🇬'},
+    {'name': 'CimaClub', 'flag': '🇪🇬'},
+    {'name': 'CimaLight', 'flag': '🇪🇬'},
+    {'name': 'CimaTn', 'flag': '🇹🇳'},
+    {'name': 'CimaWbas', 'flag': '🇪🇬'},
+    {'name': 'Disney Plus', 'flag': '🇺🇸'},
+    {'name': 'FASELHD', 'flag': '🇪🇬'},
+    {'name': 'Hotstar', 'flag': '🇮🇳'},
+    {'name': 'Netflix', 'flag': '🇺🇸'},
+  ];
+
+  // دالة لإظهار قائمة المصادر السفلية
+  void _showSourcesModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF161B22),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          height: 450,
+          child: ListView.builder(
+            itemCount: sources.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Text(
+                  sources[index]['flag']!,
+                  style: const TextStyle(fontSize: 20),
+                ),
+                title: Text(
+                  sources[index]['name']!,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                  ),
+                ),
+                onTap: () {
+                  // يمكنك هنا تنفيذ إجراء عند اختيار المصدر
+                  Navigator.pop(context);
+                },
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // تصميم شريط التنقل العلوي //
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: CustomScrollView(
+        slivers: [
+          // شريط علوي يتمدد وينكمش عند التمرير
+          SliverAppBar(
+            expandedHeight: 300.0,
+            floating: false,
+            pinned: true,
+            backgroundColor: const Color(0xFF0F1117),
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text(
+                'Doctor X',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF1F6FEB), Color(0xFF0D1117)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: const Stack(
                   children: [
-                    const Text(
-                      'Go tv',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Positioned(
+                      bottom: 50,
+                      left: 16,
+                      right: 16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Doctor X',
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          Text(
+                            'أحدث الدراما والتشويق الغامض',
+                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                          ),
+                        ],
                       ),
-                    ),
-                    Row(
-                      children: [
-                        // النقر على بحث //
-                        IconButton(
-                          icon: const Icon(Icons.search, color: Colors.white70),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.history, color: Colors.white70),
-                          onPressed: () {},
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
-// تصميم شريط التصنيفات الأفقية //
-              SizedBox(
-                height: 40,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  itemBuilder: (context, index) {
-                    final isSelected = _selectedCategory == index;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedCategory = index;
-                        });
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF1F6FEB) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          categories[index],
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.white60,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.search, color: Colors.white70),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: const Icon(Icons.history, color: Colors.white70),
+                onPressed: () {},
+              ),
+            ],
+          ),
+
+          // باقي محتوى الصفحة
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                // شريط التصنيفات الأفقية
+                SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    itemBuilder: (context, index) {
+                      final isSelected = _selectedCategory == index;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = index;
+                          });
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            color: isSelected ? const Color(0xFF1F6FEB) : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            categories[index],
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.white60,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // النقر على البوستر الكبير + تصميم الواجهة //
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  width: double.infinity,
-                  height: 320,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF1F6FEB), Color(0xFF0D1117)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        bottom: 24,
-                        left: 16,
-                        right: 16,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'Doctor X',
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 6),
-                            Text(
-                              'أحدث الدراما والتشويق الغامض',
-                              style: TextStyle(color: Colors.white70, fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
+                const SizedBox(height: 100),
+              ],
+            ),
+          ),
+        ],
+      ),
+      // زر CIMANAW العائم وعند الضغط عليه تفتح القائمة
+      floatingActionButton: GestureDetector(
+        onTap: () => _showSourcesModal(context),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: const Color(0xFF161B22),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: Colors.white24, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
-              const SizedBox(height: 24),
-
-              // عنوان القسم //
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text(
-                      'الرسوم البيانية الأعلى',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      'المزيد',
-                      style: TextStyle(color: Color(0xFF1F6FEB), fontSize: 13),
-                    ),
-                  ],
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(Icons.filter_list, color: Colors.white, size: 18),
+              SizedBox(width: 8),
+              Text(
+                'CIMANAW',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
                 ),
               ),
-              const SizedBox(height: 12),
-
-              // النقر على بوستر + تصميم القائمة الأفقية //
-              SizedBox(
-                height: 220,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 3,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  itemBuilder: (context, index) {
-                    final ranks = ['1', '2', '3'];
-                    final titles = ['Yielding to My Best...', 'في السابعة عشر', 'الحب عبر الجبال'];
-                    final views = ['280115', '250016', '210978'];
-
-                    return GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        width: 130,
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment
+            ],
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
+  }
+}
