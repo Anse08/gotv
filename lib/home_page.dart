@@ -13,6 +13,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 0;
   Timer? _timer;
 
+  // متغيرات لتخزين المصدر المختار حالياً
+  String selectedSourceName = 'CIMANAW';
+  String selectedSourceFlag = '';
+
   final List bannerItems = [
     {
       'title': 'A Story of Derry',
@@ -103,6 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 onTap: () {
+                  // تحديث اسم الزر والعلم عند الضغط وإغلاق القائمة
+                  setState(() {
+                    selectedSourceName = source['name'] ?? 'CIMANAW';
+                    selectedSourceFlag = source['flag'] ?? '';
+                  });
                   Navigator.pop(context);
                 },
               );
@@ -236,12 +245,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(Icons.filter_list, color: Colors.white, size: 18),
-              SizedBox(width: 8),
+            children: [
+              // عرض العلم إذا وجد، وإلا إيقونة الفلتر
+              selectedSourceFlag.isNotEmpty
+                  ? Text(selectedSourceFlag, style: const TextStyle(fontSize: 16))
+                  : const Icon(Icons.filter_list, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
               Text(
-                'CIMANAW',
-                style: TextStyle(
+                selectedSourceName,
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
@@ -255,4 +267,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
