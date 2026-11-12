@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 
@@ -40,8 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 0;
   Timer? _timer;
 
-  // قائمة العناصر للبانر المتحرك مع الأنواع الصحيحة
-  final List> bannerItems = [
+  // تعريف القائمة بدون أقواس زاوية لتجنب مشكلة الحذف أثناء النسخ
+  final List bannerItems = [
     {
       'title': 'A Story of Derry',
       'rating': '6.8',
@@ -83,8 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // قائمة المصادر للقائمة المنسدلة مع كتابة النوع الصحيح
-  final List> sources = const [
+  // قائمة المصادر بدون أقواس زاوية
+  final List sources = const [
     {'name': 'None', 'flag': '🌐'},
     {'name': 'Random', 'flag': '🔀'},
     {'name': 'Aflaam', 'flag': '🇪🇬'},
@@ -117,13 +116,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView.builder(
             itemCount: sources.length,
             itemBuilder: (context, index) {
+              final source = sources[index];
               return ListTile(
                 leading: Text(
-                  sources[index]['flag']!,
+                  source['flag'] ?? '',
                   style: const TextStyle(fontSize: 20),
                 ),
                 title: Text(
-                  sources[index]['name']!,
+                  source['name'] ?? '',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
