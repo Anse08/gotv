@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 jobs:
-  build-and-deploy:
+  build-web:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -22,7 +22,9 @@ jobs:
           channel: 'stable'
 
       - name: Enable Web Platform
-        run: flutter create . --platforms web
+        run: |
+          flutter create . --platforms web
+          flutter config --enable-web
 
       - name: Get dependencies
         run: flutter pub get
@@ -30,11 +32,22 @@ jobs:
       - name: Build Web
         run: flutter build web --release --base-href "/gotv/"
 
-      - name: Upload artifact
+      - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./build/web
 
+  deploy:
+    needs: build-web
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        
