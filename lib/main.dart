@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -34,11 +35,56 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<String> categories = ['الصفحة الرئيسية', 'دراما كورية', 'أفلام', 'مسلسلات', 'رعب'];
-  int _selectedCategory = 0;
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+  Timer? _timer;
 
-  // قائمة المصادر التي ستظهر في القائمة المنسدلة
-  final List<Map<String, String>> sources = [
+  // قائمة العناصر التي ستتغير في البنر المتحرك
+  final List> bannerItems = [
+    {
+      'title': 'A Story of Derry',
+      'rating': '6.8',
+      'type': 'MOVIE',
+      'image': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop',
+    },
+    {
+      'title': 'The Mentalist',
+      'rating': '8.4',
+      'type': 'SERIES',
+      'image': 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1000&auto=format&fit=crop',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // إعداد المؤقت لتغيير الصفحة تلقائياً كل ثانية (أو يمكنك زيادة المدة حسب الراحة)
+    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      if (_currentPage < bannerItems.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  // قائمة المصادر للقائمة المنسدلة
+  final List> sources = const [
     {'name': 'None', 'flag': '🌐'},
     {'name': 'Random', 'flag': '🔀'},
     {'name': 'Aflaam', 'flag': '🇪🇬'},
@@ -57,7 +103,6 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'Netflix', 'flag': '🇺🇸'},
   ];
 
-  // دالة لإظهار قائمة المصادر السفلية
   void _showSourcesModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -86,7 +131,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 onTap: () {
-                  // يمكنك هنا تنفيذ إجراء عند اختيار المصدر
                   Navigator.pop(context);
                 },
               );
@@ -102,56 +146,93 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // شريط علوي يتمدد وينكمش عند التمرير
           SliverAppBar(
-            expandedHeight: 300.0,
+            expandedHeight: 350.0,
             floating: false,
             pinned: true,
             backgroundColor: const Color(0xFF0F1117),
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                'Doctor X',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF1F6FEB), Color(0xFF0D1117)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: const Stack(
-                  children: [
-                    Positioned(
-                      bottom: 50,
-                      left: 16,
-                      right: 16,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Doctor X',
-                            style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 6),
-                          Text(
-                            'أحدث الدراما والتشويق الغامض',
-                            style: TextStyle(color: Colors.white70, fontSize: 14),
-                          ),
-                        ],
+              background: PageView.builder(
+                controller: _pageController,
+                itemCount: bannerItems.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final item = bannerItems[index];
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        item['image'],
+                        fit: BoxFit.cover,
                       ),
-                    ),
-                  ],
-                ),
+                      // طبقة تدرج لكي تظهر النصوص بوضوح
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.3),
+                              const Color(0xFF0F1117),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // تفاصيل الفيلم/المسلسل داخل البنر
+                      Positioned(
+                        bottom: 40,
+                        left: 0,
+                        right: 0,
+                        child: Column(
+                          children: [
+                            Text(
+                              item['title'],
+                              style: const TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.star, color: Colors.amber, size: 20),
+                                const SizedBox(width: 4),
+                                Text(
+                                  item['rating'],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: item['type'] == 'MOVIE' ? Colors.blue : Colors.orange,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    item['type'],
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
             actions: [
@@ -160,60 +241,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {},
               ),
               IconButton(
-                icon: const Icon(Icons.history, color: Colors.white70),
+                icon: const Icon(Icons.settings, color: Colors.white70),
                 onPressed: () {},
               ),
             ],
           ),
-
-          // باقي محتوى الصفحة
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                // شريط التصنيفات الأفقية
-                SizedBox(
-                  height: 40,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: categories.length,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    itemBuilder: (context, index) {
-                      final isSelected = _selectedCategory == index;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedCategory = index;
-                          });
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFF1F6FEB) : Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            categories[index],
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.white60,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 100),
-              ],
-            ),
-          ),
         ],
       ),
-      // زر CIMANAW العائم وعند الضغط عليه تفتح القائمة
+      // زر CIMANAW العائم
       floatingActionButton: GestureDetector(
         onTap: () => _showSourcesModal(context),
         child: Container(
