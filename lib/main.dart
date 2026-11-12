@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 0;
   Timer? _timer;
 
-  // قائمة العناصر التي ستتغير في البنر المتحرك
+  // قائمة العناصر للبانر المتحرك مع الأنواع الصحيحة
   final List> bannerItems = [
     {
       'title': 'A Story of Derry',
@@ -58,7 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // إعداد المؤقت لتغيير الصفحة تلقائياً كل ثانية (أو يمكنك زيادة المدة حسب الراحة)
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_currentPage < bannerItems.length - 1) {
         _currentPage++;
@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // قائمة المصادر للقائمة المنسدلة
+  // قائمة المصادر للقائمة المنسدلة مع كتابة النوع الصحيح
   final List> sources = const [
     {'name': 'None', 'flag': '🌐'},
     {'name': 'Random', 'flag': '🔀'},
@@ -166,10 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     fit: StackFit.expand,
                     children: [
                       Image.network(
-                        item['image'],
+                        item['image'].toString(),
                         fit: BoxFit.cover,
                       ),
-                      // طبقة تدرج لكي تظهر النصوص بوضوح
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -182,7 +181,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      // تفاصيل الفيلم/المسلسل داخل البنر
                       Positioned(
                         bottom: 40,
                         left: 0,
@@ -190,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           children: [
                             Text(
-                              item['title'],
+                              item['title'].toString(),
                               style: const TextStyle(
                                 fontSize: 26,
                                 fontWeight: FontWeight.bold,
@@ -204,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Icon(Icons.star, color: Colors.amber, size: 20),
                                 const SizedBox(width: 4),
                                 Text(
-                                  item['rating'],
+                                  item['rating'].toString(),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -218,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
-                                    item['type'],
+                                    item['type'].toString(),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
@@ -248,7 +246,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      // زر CIMANAW العائم
       floatingActionButton: GestureDetector(
         onTap: () => _showSourcesModal(context),
         child: Container(
