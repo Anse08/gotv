@@ -10,6 +10,7 @@ class DetailsPage extends StatelessWidget {
   final String overview;
   final String budget;
   final List> cast;
+  
 
   const DetailsPage({
     super.key,
