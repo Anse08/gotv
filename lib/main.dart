@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
+import 'details_page.dart';
 
 void main() {
   runApp(const GoTvApp());
@@ -22,7 +23,18 @@ class GoTvApp extends StatelessWidget {
           surface: Color(0xFF161B22),
         ),
       ),
-      home: const HomeScreen(),
+      home: Builder(
+        builder: (context) => HomeScreen(
+          onBannerTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DetailsPage(),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
