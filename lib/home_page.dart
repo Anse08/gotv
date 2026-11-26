@@ -2,7 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final VoidCallback? onBannerTap;
+
+  const HomeScreen({
+    Key? key,
+    this.onBannerTap,
+  }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -22,13 +27,15 @@ class _HomeScreenState extends State<HomeScreen> {
       'title': 'A Story of Derry',
       'rating': '6.8',
       'type': 'MOVIE',
-      'image': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop',
     },
     {
       'title': 'The Mentalist',
       'rating': '8.4',
       'type': 'SERIES',
-      'image': 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1000&auto=format&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1000&auto=format&fit=crop',
     },
   ];
 
@@ -143,73 +150,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 itemBuilder: (context, index) {
                   final item = bannerItems[index];
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        item['image'].toString(),
-                        fit: BoxFit.cover,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.3),
-                              const Color(0xFF0F1117),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 40,
-                        left: 0,
-                        right: 0,
-                        child: Column(
-                          children: [
-                            Text(
-                              item['title'].toString(),
-                              style: const TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.star, color: Colors.amber, size: 20),
-                                const SizedBox(width: 4),
-                                Text(
-                                  item['rating'].toString(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: item['type'] == 'MOVIE' ? Colors.blue : Colors.orange,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                    item['type'].toString(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  return BannerSlideCard(
+                    title: item['title'].toString(),
+                    rating: item['rating'].toString(),
+                    type: item['type'].toString(),
+                    imageUrl: item['image'].toString(),
+                    onTap: widget.onBannerTap,
                   );
                 },
               ),
@@ -264,6 +210,102 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
+  }
+}
+
+/// كلاس مستقل لتصميم شريحة البنر الأفقي وربط إشارة النقر بالخارج
+class BannerSlideCard extends StatelessWidget {
+  final String title;
+  final String rating;
+  final String type;
+  final String imageUrl;
+  final VoidCallback? onTap;
+
+  const BannerSlideCard({
+    Key? key,
+    required this.title,
+    required this.rating,
+    required this.type,
+    required this.imageUrl,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.3),
+                  const Color(0xFF0F1117),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.star, color: Colors.amber, size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      rating,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: type == 'MOVIE' ? Colors.blue : Colors.orange,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        type,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
